@@ -1,0 +1,46 @@
+CREATE DATABASE logistica_devoluciones;
+USE logistica_devoluciones;
+
+CREATE TABLE Cliente (
+    id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_completo VARCHAR(100) NOT NULL,
+    numero_telefonico VARCHAR(20)
+);
+
+CREATE TABLE Producto (
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    precio DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE Pedido (
+    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+    fecha DATE NOT NULL,
+    monto_total DECIMAL(10,2),
+    id_cliente INT,
+    FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente)
+);
+
+CREATE TABLE Producto_Pedido (
+    id_pedido INT,
+    id_producto INT,
+    PRIMARY KEY (id_pedido, id_producto),
+    FOREIGN KEY (id_pedido) REFERENCES Pedido(id_pedido),
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto)
+);
+
+CREATE TABLE Garantia (
+    id_garantia INT AUTO_INCREMENT PRIMARY KEY,
+    disponibilidad BOOLEAN NOT NULL,
+    fecha_limite DATE NOT NULL,
+    id_producto INT,
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto)
+);
+
+CREATE TABLE Solicitud (
+    id_solicitud INT AUTO_INCREMENT PRIMARY KEY,
+    fecha DATE NOT NULL,
+    estado VARCHAR(50) NOT NULL,
+    id_pedido INT,
+    FOREIGN KEY (id_pedido) REFERENCES Pedido(id_pedido)
+);
