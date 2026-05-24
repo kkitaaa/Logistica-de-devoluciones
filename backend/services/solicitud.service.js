@@ -24,7 +24,7 @@ async function crearSolicitud(id_pedido, motivo) {
     }
   });
 
-  const estado = garantiaValida ? 'aprobado' : 'rechazado';
+  const estado = garantiaValida ? 'Aprobada' : 'Rechazada';
   const insertQuery = `
     INSERT INTO Solicitud (fecha, motivo, estado, id_pedido)
     VALUES (CURDATE(), ?, ?, ?);
