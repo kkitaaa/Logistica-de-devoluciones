@@ -11,7 +11,7 @@ import {
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { obtenerSolicitudPorId } from "../services/solicitudes";
+import { obtenerSolicitudes } from "../services/solicitudes";
 
 function colorEstado(estado) {
   switch (estado) {

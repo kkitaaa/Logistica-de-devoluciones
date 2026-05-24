@@ -31,10 +31,6 @@ export default function Home() {
         Sistema de Logística de Devoluciones
       </Heading>
 
-      <Text color="gray.400" mb={10}>
-        Panel principal (sí, este es el cerebro del sistema, no preguntes mucho)
-      </Text>
-
       <HStack spacing={8} justify="center" flexWrap="wrap">
 
         {/* CARD 1 */}
