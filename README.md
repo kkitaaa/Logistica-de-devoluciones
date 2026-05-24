@@ -39,7 +39,7 @@ npm run dev
 Frontend queda en:
 http://localhost:5173
 
-6. Orden correcto de ejecución (IMPORTANTE)
+4. Orden correcto de ejecución (IMPORTANTE)
 
 Siempre así:
 
