@@ -1,21 +1,21 @@
-const { validarGarantiaPedido } = require('../services/garantia.services');
+const { crearSolicitud } = require('../services/solicitud.service');
 
 async function procesarDevolucion(req, res) {
-  const { id_pedido } = req.body;
+  const { id_pedido, motivo } = req.body;
 
   try {
-    const garantiaValida = await validarGarantiaPedido(id_pedido);
+    const estado = await crearSolicitud(id_pedido, motivo);
 
-    if (garantiaValida) {
-      console.log("📢 Pedido válido para devolución/reemplazo.");
-      res.json({ mensaje: "Pedido válido para devolución/reemplazo." });
+    if (estado === 'aprobado') {
+      console.log("Solicitud aprobada: garantía válida.");
+      res.json({ mensaje: "Solicitud aprobada: garantía válida." });
     } else {
-      console.log("📢 Pedido rechazado, garantía expirada o no disponible.");
-      res.json({ mensaje: "Pedido rechazado, garantía expirada o no disponible." });
+      console.log("Solicitud rechazada: garantía expirada o no disponible.");
+      res.json({ mensaje: "Solicitud rechazada: garantía expirada o no disponible." });
     }
   } catch (error) {
-    console.error("Error en validación:", error);
-    res.status(500).json({ error: "Error interno en validación" });
+    console.error("Error al procesar devolución:", error);
+    res.status(500).json({ error: "Error interno en el servidor" });
   }
 }
 

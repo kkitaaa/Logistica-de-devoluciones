@@ -23,4 +23,13 @@ async function validarGarantiaPedido(id_pedido) {
   return valido;
 }
 
-module.exports = { validarGarantiaPedido };
+async function listarGarantias() {
+  const [rows] = await connection.promise().query(
+    `SELECT g.id_garantia, g.disponibilidad, g.fecha_limite, g.id_producto, p.nombre
+     FROM Garantia g
+     JOIN Producto p ON p.id_producto = g.id_producto`
+  );
+  return rows;
+}
+
+module.exports = { validarGarantiaPedido, listarGarantias };
