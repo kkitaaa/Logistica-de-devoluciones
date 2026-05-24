@@ -1,4 +1,4 @@
-const connection = require('../db');
+import connection from "../db.js";
 
 async function validarGarantiaPedido(id_pedido) {
   const query = `
@@ -9,12 +9,14 @@ async function validarGarantiaPedido(id_pedido) {
     WHERE pp.id_pedido = ?;
   `;
 
-  const [rows] = await connection.promise().query(query, [id_pedido]);
+  const [rows] = await connection.query(query, [id_pedido]);
+
   const hoy = new Date();
   let valido = true;
 
   rows.forEach(row => {
     const fechaLimite = new Date(row.fecha_limite);
+
     if (!row.disponibilidad || fechaLimite < hoy) {
       valido = false;
     }
@@ -23,4 +25,4 @@ async function validarGarantiaPedido(id_pedido) {
   return valido;
 }
 
-module.exports = { validarGarantiaPedido };
+export { validarGarantiaPedido };

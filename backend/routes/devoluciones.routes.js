@@ -1,7 +1,8 @@
-const express = require('express');
-const { procesarDevolucion } = require('../controllers/devoluciones.controller');
-const router = express.Router();
+import { Router } from "express";
+import { procesarDevolucion } from "../controllers/devoluciones.controller.js";
 
-router.post('/devolucion', procesarDevolucion);
+const router = Router();
 
-module.exports = router;
+router.post("/devolucion", procesarDevolucion);
+
+export default router;

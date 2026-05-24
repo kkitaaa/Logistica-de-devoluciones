@@ -1,9 +1,11 @@
-const mysql = require('mysql2');
+import mysql from "mysql2/promise";
 
 // Conexión a la BD
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'logistica_devoluciones'
+const connection = await mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "logistica_devoluciones"
 });
+
+export default connection;
