@@ -1,6 +1,6 @@
 const API = "http://localhost:3000/api/solicitudes";
 
-export const obtenerSolicitudes = async () => {
+export async function obtenerSolicitudes() {
   const response = await fetch(API);
 
   if (!response.ok) {
@@ -8,4 +8,14 @@ export const obtenerSolicitudes = async () => {
   }
 
   return await response.json();
-};
+}
+
+export async function obtenerSolicitudPorId(id) {
+  const response = await fetch(`${API}/${id}`);
+
+  if (!response.ok) {
+    throw new Error("Error al obtener solicitud por id");
+  }
+
+  return await response.json();
+}

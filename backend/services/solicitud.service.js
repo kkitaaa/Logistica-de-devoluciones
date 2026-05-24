@@ -36,9 +36,44 @@ async function crearSolicitud(id_pedido, motivo) {
 
 async function listarSolicitudes() {
   const [rows] = await connection.promise().query(
-    'SELECT id_solicitud, fecha, estado, motivo, id_pedido FROM Solicitud'
+    `SELECT 
+        s.id_solicitud,
+        s.fecha,
+        s.estado,
+        s.motivo,
+        s.id_pedido,
+        p.fecha AS fecha_pedido,
+        p.monto_total,
+        c.nombre_completo,
+        c.numero_telefonico
+     FROM Solicitud s
+     JOIN Pedido p ON s.id_pedido = p.id_pedido
+     JOIN Cliente c ON p.id_cliente = c.id_cliente`
   );
+
   return rows;
+}
+
+async function obtenerSolicitudPorId(id) {
+  const [rows] = await connection.promise().query(
+    `SELECT 
+        s.id_solicitud,
+        s.fecha,
+        s.estado,
+        s.motivo,
+        s.id_pedido,
+        p.fecha AS fecha_pedido,
+        p.monto_total,
+        c.nombre_completo,
+        c.numero_telefonico
+     FROM Solicitud s
+     JOIN Pedido p ON s.id_pedido = p.id_pedido
+     JOIN Cliente c ON p.id_cliente = c.id_cliente
+     WHERE s.id_solicitud = ?`,
+    [id]
+  );
+
+  return rows[0];
 }
 
 module.exports = { crearSolicitud, listarSolicitudes };

@@ -36,15 +36,15 @@ export default function SolicitudDetalle() {
   useEffect(() => {
     const cargar = async () => {
       try {
-        const data = await obtenerSolicitudPorId(id);
-        setSolicitud(data);
+        const solicitudes = await obtenerSolicitudes();
+        const encontrada = solicitudes.find(s => String(s.id_solicitud) === String(id));
+        setSolicitud(encontrada || null);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
     cargar();
   }, [id]);
 
@@ -106,11 +106,6 @@ export default function SolicitudDetalle() {
 
           <Text>
             <b>Fecha pedido:</b> {solicitud.fecha}
-          </Text>
-
-          <Text>
-            <b>Monto total:</b>{" "}
-            ${Number(solicitud.monto_total).toLocaleString()}
           </Text>
 
           <Divider borderColor="#333" />

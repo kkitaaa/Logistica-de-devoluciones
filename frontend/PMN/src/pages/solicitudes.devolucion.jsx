@@ -15,7 +15,9 @@ import {
   HStack,
 } from "@chakra-ui/react";
 
+
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { obtenerSolicitudes } from "../services/solicitudes";
 
 function colorEstado(estado) {
@@ -36,6 +38,7 @@ function colorEstado(estado) {
 export default function Solicitudes() {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     cargarSolicitudes();
@@ -135,7 +138,7 @@ export default function Solicitudes() {
                 </Td>
 
                 <Td>
-                  <Button size="xs" colorScheme="blue">
+                  <Button size="xs" colorScheme="blue" onClick={() => navigate(`/solicitudes/${s.id_solicitud}`)}>
                     Ver
                   </Button>
                 </Td>
