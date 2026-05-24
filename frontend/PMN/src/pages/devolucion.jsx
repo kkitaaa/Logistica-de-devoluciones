@@ -1,8 +1,10 @@
 
 import React, { useState } from 'react';
 
+
 function Devolucion() {
 	const [idPedido, setIdPedido] = useState('');
+	const [motivo, setMotivo] = useState('');
 	const [mensaje, setMensaje] = useState('');
 	const [cargando, setCargando] = useState(false);
 
@@ -16,7 +18,7 @@ function Devolucion() {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ id_pedido: idPedido }),
+				body: JSON.stringify({ id_pedido: idPedido, motivo }),
 			});
 			const data = await res.json();
 			setMensaje(data.mensaje || data.error || 'Sin respuesta');
@@ -39,6 +41,17 @@ function Devolucion() {
 					required
 					style={{ width: '100%', marginBottom: 12, padding: 8 }}
 				/>
+
+				<label htmlFor="motivo">Motivo de la devolución:</label>
+				<textarea
+					id="motivo"
+					value={motivo}
+					onChange={e => setMotivo(e.target.value)}
+					required
+					rows={3}
+					style={{ width: '100%', marginBottom: 12, padding: 8 }}
+				/>
+
 				<button type="submit" disabled={cargando} style={{ width: '100%', padding: 10 }}>
 					{cargando ? 'Enviando...' : 'Procesar Devolución'}
 				</button>
