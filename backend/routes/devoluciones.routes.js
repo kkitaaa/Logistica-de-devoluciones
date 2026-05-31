@@ -3,8 +3,10 @@ const { procesarDevolucion } = require('../controllers/devoluciones.controller')
 const { insertarProducto, obtenerProductos } = require('../controllers/productos.controller');
 const { insertarPedido, obtenerPedidos } = require('../controllers/pedidos.controller');
 const { insertarCliente, obtenerClientes } = require('../controllers/clientes.controller');
-const { insertarSolicitud, obtenerSolicitudes } = require('../controllers/solicitudes.controller');
+const {insertarSolicitud, obtenerSolicitudes,  obtenerSolicitudPorIdController,  obtenerMisSolicitudes} = require('../controllers/solicitudes.controller');
 const { obtenerGarantias } = require('../controllers/garantias.controller');
+const {register, login} = require('../controllers/auth.controller');
+
 const router = express.Router();
 
 /**
@@ -15,22 +17,6 @@ const router = express.Router();
  *       - Clientes
  *     summary: Crear un cliente
  *     description: Inserta un cliente en la base de datos.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               nombre_completo:
- *                 type: string
- *                 example: "Juan Pérez"
- *               numero_telefonico:
- *                 type: string
- *                 example: "5551234567"
- *     responses:
- *       201:
- *         description: Cliente creado correctamente
  */
 router.post('/cliente', insertarCliente);
 
@@ -42,9 +28,6 @@ router.post('/cliente', insertarCliente);
  *       - Clientes
  *     summary: Listar clientes
  *     description: Obtiene todos los clientes registrados.
- *     responses:
- *       200:
- *         description: Lista de clientes
  */
 router.get('/clientes', obtenerClientes);
 
@@ -55,31 +38,7 @@ router.get('/clientes', obtenerClientes);
  *     tags:
  *       - Productos
  *     summary: Insertar un producto con garantía
- *     description: Crea un producto y su registro de garantía en la base de datos.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               nombre:
- *                 type: string
- *                 example: "Mouse inalámbrico"
- *               precio:
- *                 type: number
- *                 format: float
- *                 example: 250.00
- *               disponibilidad:
- *                 type: boolean
- *                 example: true
- *               fecha_limite:
- *                 type: string
- *                 format: date
- *                 example: "2025-12-31"
- *     responses:
- *       201:
- *         description: Producto creado con garantía
+ *     description: Crea un producto y su registro de garantía.
  */
 router.post('/producto', insertarProducto);
 
@@ -90,10 +49,7 @@ router.post('/producto', insertarProducto);
  *     tags:
  *       - Productos
  *     summary: Listar productos
- *     description: Obtiene los productos junto con su información de garantía.
- *     responses:
- *       200:
- *         description: Lista de productos
+ *     description: Obtiene los productos junto con su garantía.
  */
 router.get('/productos', obtenerProductos);
 
@@ -103,34 +59,8 @@ router.get('/productos', obtenerProductos);
  *   post:
  *     tags:
  *       - Pedidos
- *     summary: Crear un pedido con productos
- *     description: Inserta un pedido y asocia los productos seleccionados al pedido.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               fecha:
- *                 type: string
- *                 format: date
- *                 example: "2024-06-01"
- *               monto_total:
- *                 type: number
- *                 format: float
- *                 example: 1250.00
- *               id_cliente:
- *                 type: integer
- *                 example: 1
- *               productos:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 example: [1, 2]
- *     responses:
- *       201:
- *         description: Pedido creado correctamente
+ *     summary: Crear pedido
+ *     description: Inserta un pedido y asocia productos.
  */
 router.post('/pedido', insertarPedido);
 
@@ -141,10 +71,6 @@ router.post('/pedido', insertarPedido);
  *     tags:
  *       - Pedidos
  *     summary: Listar pedidos
- *     description: Obtiene los pedidos registrados.
- *     responses:
- *       200:
- *         description: Lista de pedidos
  */
 router.get('/pedidos', obtenerPedidos);
 
@@ -154,24 +80,7 @@ router.get('/pedidos', obtenerPedidos);
  *   post:
  *     tags:
  *       - Solicitudes
- *     summary: Insertar solicitud de devolución
- *     description: Crea una solicitud y valida la garantía de los productos del pedido.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               id_pedido:
- *                 type: integer
- *                 example: 1
- *               motivo:
- *                 type: string
- *                 example: "Producto defectuoso"
- *     responses:
- *       200:
- *         description: Resultado de la validación de garantía
+ *     summary: Crear solicitud de devolución
  */
 router.post('/solicitud', insertarSolicitud);
 
@@ -181,24 +90,7 @@ router.post('/solicitud', insertarSolicitud);
  *   post:
  *     tags:
  *       - Solicitudes
- *     summary: Crear una devolución
- *     description: Crea una solicitud de devolución para un pedido existente.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               id_pedido:
- *                 type: integer
- *                 example: 1
- *               motivo:
- *                 type: string
- *                 example: "Producto defectuoso"
- *     responses:
- *       200:
- *         description: Devolución procesada correctamente
+ *     summary: Procesar devolución
  */
 router.post('/devolucion', insertarSolicitud);
 
@@ -208,13 +100,47 @@ router.post('/devolucion', insertarSolicitud);
  *   get:
  *     tags:
  *       - Solicitudes
- *     summary: Listar solicitudes
- *     description: Obtiene todas las solicitudes de devolución.
- *     responses:
- *       200:
- *         description: Lista de solicitudes
+ *     summary: Obtener todas las solicitudes
  */
 router.get('/solicitudes', obtenerSolicitudes);
+
+/**
+ * @swagger
+ * /api/solicitudes/{id}:
+ *   get:
+ *     tags:
+ *       - Solicitudes
+ *     summary: Obtener solicitud por ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Solicitud encontrada
+ */
+router.get('/solicitudes/:id', obtenerSolicitudPorIdController);
+
+/**
+ * @swagger
+ * /api/mis-solicitudes/{idUsuario}:
+ *   get:
+ *     tags:
+ *       - Solicitudes
+ *     summary: Obtener solicitudes del usuario
+ *     parameters:
+ *       - in: path
+ *         name: idUsuario
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de solicitudes del usuario
+ */
+router.get('/mis-solicitudes/:idUsuario', obtenerMisSolicitudes);
 
 /**
  * @swagger
@@ -223,11 +149,61 @@ router.get('/solicitudes', obtenerSolicitudes);
  *     tags:
  *       - Garantías
  *     summary: Listar garantías
- *     description: Obtiene todos los registros de garantía.
- *     responses:
- *       200:
- *         description: Lista de garantías
  */
 router.get('/garantias', obtenerGarantias);
+
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Registrar usuario
+ *     description: Crea un nuevo usuario cliente.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               numero_telefonico:
+ *                 type: string
+ *               correo:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Usuario registrado correctamente
+ */
+router.post('/auth/register', register);
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Iniciar sesión
+ *     description: Autentica un usuario y devuelve un token JWT.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               correo:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login exitoso
+ */
+router.post('/auth/login', login);
 
 module.exports = router;

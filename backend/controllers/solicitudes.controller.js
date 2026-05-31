@@ -2,9 +2,10 @@ const {
   crearSolicitud,
   listarSolicitudes,
   obtenerSolicitudPorId,
+  obtenerSolicitudesPorUsuario,
 } = require("../services/solicitud.service");
 
-// POST /solicitudes
+// POST /solicitud
 async function insertarSolicitud(req, res) {
   const { id_pedido, motivo } = req.body;
 
@@ -37,6 +38,7 @@ async function insertarSolicitud(req, res) {
 async function obtenerSolicitudes(req, res) {
   try {
     const solicitudes = await listarSolicitudes();
+
     return res.json(solicitudes);
   } catch (error) {
     console.error("Error al obtener solicitudes:", error);
@@ -70,8 +72,26 @@ async function obtenerSolicitudPorIdController(req, res) {
   }
 }
 
+// GET /mis-solicitudes/:idUsuario
+async function obtenerMisSolicitudes(req, res) {
+  const { idUsuario } = req.params;
+
+  try {
+    const solicitudes = await obtenerSolicitudesPorUsuario(idUsuario);
+
+    return res.json(solicitudes);
+  } catch (error) {
+    console.error("Error al obtener solicitudes del usuario:", error);
+
+    return res.status(500).json({
+      error: "Error al obtener solicitudes del usuario",
+    });
+  }
+}
+
 module.exports = {
   insertarSolicitud,
   obtenerSolicitudes,
   obtenerSolicitudPorIdController,
+  obtenerMisSolicitudes,
 };

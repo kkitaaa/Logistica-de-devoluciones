@@ -1,15 +1,23 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/home";
-import Devolucion from "./pages/devolucion";
+import Devolucion from "./pages/solicitud";
 import Solicitudes from "./pages/solicitudes.devolucion";
 import SolicitudDetalle from "./pages/solicitud.detalle";
+import Login from "./pages/login";
+import Register from "./pages/registro";
 
 function App() {
   return (
     <Routes>
+      {/* Registro */}
+      <Route path="/" element={<Register />} />
+
+      {/* Login */}
+      <Route path="/login" element={<Login />} />
+
       {/* Home */}
-      <Route path="/" element={<Home />} />
+      <Route path="/home" element={<Home />} />
 
       {/* Crear devolución */}
       <Route path="/devolucion" element={<Devolucion />} />
