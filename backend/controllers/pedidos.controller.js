@@ -1,4 +1,4 @@
-const { crearPedido, listarPedidos } = require('../services/pedido.service');
+const { crearPedido, listarPedidos, obtenerPedidosPorUsuario } = require('../services/pedido.service');
 
 async function insertarPedido(req, res) {
   const { fecha, monto_total, id_cliente, productos } = req.body;
@@ -22,4 +22,27 @@ async function obtenerPedidos(req, res) {
   }
 }
 
-module.exports = { insertarPedido, obtenerPedidos };
+async function obtenerMisPedidos(req, res) {
+  const { idUsuario } = req.params;
+
+  try {
+    const pedidos =
+      await obtenerPedidosPorUsuario(idUsuario);
+
+    return res.json(pedidos);
+
+  } catch (error) {
+
+    console.error(
+      'Error al obtener pedidos del usuario:',
+      error
+    );
+
+    return res.status(500).json({
+      error: 'Error al obtener pedidos'
+    });
+
+  }
+}
+
+module.exports = { insertarPedido, obtenerPedidos, obtenerMisPedidos };

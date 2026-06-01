@@ -1,7 +1,7 @@
 const express = require('express');
 const { procesarDevolucion } = require('../controllers/devoluciones.controller');
 const { insertarProducto, obtenerProductos } = require('../controllers/productos.controller');
-const { insertarPedido, obtenerPedidos } = require('../controllers/pedidos.controller');
+const { insertarPedido, obtenerPedidos, obtenerMisPedidos } = require('../controllers/pedidos.controller');
 const { insertarCliente, obtenerClientes } = require('../controllers/clientes.controller');
 const {insertarSolicitud, obtenerSolicitudes,  obtenerSolicitudPorIdController,  obtenerMisSolicitudes} = require('../controllers/solicitudes.controller');
 const { obtenerGarantias } = require('../controllers/garantias.controller');
@@ -73,6 +73,28 @@ router.post('/pedido', insertarPedido);
  *     summary: Listar pedidos
  */
 router.get('/pedidos', obtenerPedidos);
+
+/**
+ * @swagger
+ * /api/mis-pedidos/{idUsuario}:
+ *   get:
+ *     tags:
+ *       - Pedidos
+ *     summary: Obtener pedidos de un usuario
+ *     parameters:
+ *       - in: path
+ *         name: idUsuario
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de pedidos del usuario
+ */
+router.get(
+  '/mis-pedidos/:idUsuario',
+  obtenerMisPedidos
+);
 
 /**
  * @swagger

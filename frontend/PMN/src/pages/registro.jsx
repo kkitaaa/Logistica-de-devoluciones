@@ -5,6 +5,7 @@ function Register() {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
+  const [numero_telefonico, setNumeroTelefonico] = useState("");
 
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
@@ -19,7 +20,7 @@ function Register() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/register",
+        "http://localhost:3000/api/auth/register",
         {
           method: "POST",
           headers: {
@@ -29,6 +30,7 @@ function Register() {
             nombre,
             correo,
             password,
+            numero_telefonico,
           }),
         }
       );
@@ -62,7 +64,7 @@ function Register() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "#4b5563",
+        background: "#0f0f0f",
         fontFamily: "Arial, sans-serif",
       }}
     >
@@ -71,7 +73,7 @@ function Register() {
           width: 420,
           padding: 25,
           borderRadius: 12,
-          background: "#2d3748",
+          background: "#1a1a1a",
           color: "white",
           boxShadow: "0 0 15px rgba(0,0,0,0.3)",
         }}
@@ -100,7 +102,7 @@ function Register() {
               marginBottom: 15,
               borderRadius: 6,
               border: "1px solid #555",
-              background: "#1f2937",
+              background: "#111",
               color: "white",
             }}
           />
@@ -119,7 +121,7 @@ function Register() {
               marginBottom: 15,
               borderRadius: 6,
               border: "1px solid #555",
-              background: "#1f2937",
+              background: "#111",
               color: "white",
             }}
           />
@@ -135,10 +137,31 @@ function Register() {
               width: "100%",
               padding: 10,
               marginTop: 5,
+              marginBottom: 15,
+              borderRadius: 6,
+              border: "1px solid #555",
+              background: "#111",
+              color: "white",
+            }}
+          />
+
+          <label>Número Telefónico</label>
+
+          <input
+            type="tel"
+            value={numero_telefonico}
+            onChange={(e) =>
+              setNumeroTelefonico(e.target.value)
+            }
+            required
+            style={{
+              width: "100%",
+              padding: 10,
+              marginTop: 5,
               marginBottom: 20,
               borderRadius: 6,
               border: "1px solid #555",
-              background: "#1f2937",
+              background: "#111",
               color: "white",
             }}
           />
@@ -169,7 +192,7 @@ function Register() {
               marginTop: 15,
               padding: 10,
               borderRadius: 6,
-              background: "#1f2937",
+              background: "#111",
               textAlign: "center",
             }}
           >

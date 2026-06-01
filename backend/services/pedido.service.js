@@ -38,4 +38,23 @@ async function listarPedidos() {
   return rows;
 }
 
-module.exports = { crearPedido, listarPedidos };
+async function obtenerPedidosPorUsuario(idUsuario) {
+  const [rows] = await connection.promise().query(
+    `
+    SELECT
+      p.id_pedido,
+      p.fecha,
+      p.monto_total
+    FROM Pedido p
+    INNER JOIN Cliente c
+      ON p.id_cliente = c.id_cliente
+    WHERE c.id_usuario = ?
+    ORDER BY p.fecha DESC
+    `,
+    [idUsuario]
+  );
+
+  return rows;
+}
+
+module.exports = { crearPedido, listarPedidos, obtenerPedidosPorUsuario };

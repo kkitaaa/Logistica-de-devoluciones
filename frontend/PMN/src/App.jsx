@@ -6,6 +6,7 @@ import Solicitudes from "./pages/solicitudes.devolucion";
 import SolicitudDetalle from "./pages/solicitud.detalle";
 import Login from "./pages/login";
 import Register from "./pages/registro";
+import MisSolicitudes from "./pages/mis.solicitudes";
 
 function App() {
   return (
@@ -27,6 +28,9 @@ function App() {
 
       {/* Detalle de solicitud */}
       <Route path="/solicitudes/:id" element={<SolicitudDetalle />} />
+
+      {/* Mis solicitudes */}
+      <Route path="/mis-solicitudes" element={<MisSolicitudes />} />
 
       {/* fallback */}
       <Route path="*" element={<Navigate to="/" />} />

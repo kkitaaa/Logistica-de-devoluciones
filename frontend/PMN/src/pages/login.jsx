@@ -89,7 +89,7 @@ function Login() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "#4b5563",
+        background: "#0f0f0f",
         fontFamily: "Arial, sans-serif",
       }}
     >
@@ -98,7 +98,7 @@ function Login() {
           width: 380,
           padding: 25,
           borderRadius: 12,
-          background: "#2d3748",
+          background: "#1a1a1a",
           color: "white",
           boxShadow: "0 0 15px rgba(0,0,0,0.3)",
         }}
@@ -129,7 +129,7 @@ function Login() {
               marginBottom: 15,
               borderRadius: 6,
               border: "1px solid #555",
-              background: "#1f2937",
+              background: "#111",
               color: "white",
               boxSizing: "border-box",
             }}
@@ -151,7 +151,7 @@ function Login() {
               marginBottom: 20,
               borderRadius: 6,
               border: "1px solid #555",
-              background: "#1f2937",
+              background: "#111",
               color: "white",
               boxSizing: "border-box",
             }}
@@ -183,7 +183,7 @@ function Login() {
               marginTop: 15,
               padding: 10,
               borderRadius: 6,
-              background: "#1f2937",
+              background: "#111",
               textAlign: "center",
             }}
           >

@@ -93,6 +93,7 @@ async function login(req, res) {
         id: usuario.id,
         nombre: usuario.nombre,
         correo: usuario.correo,
+        numero_telefonico: usuario.numero_telefonico,
         rol: usuario.rol
       }
     });
