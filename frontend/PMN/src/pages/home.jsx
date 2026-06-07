@@ -87,6 +87,33 @@ export default function Home() {
           </CardBody>
         </Card>
 
+        {/* CARD 3 */}
+        <Card
+          w="300px"
+          bg={cardBg}
+          border={border}
+          _hover={{ transform: "scale(1.05)", boxShadow: "0 0 15px rgba(0,0,0,0.6)" }}
+          transition="0.2s"
+        >
+          <CardBody>
+            <VStack spacing={4}>
+              <Heading size="md">Mis solicitudes</Heading>
+
+              <Text fontSize="sm" color="gray.400">
+                Ver solo las solicitudes del cliente autenticado
+              </Text>
+
+              <Button
+                colorScheme="teal"
+                w="100%"
+                onClick={() => navigate("/mis-solicitudes")}
+              >
+                Ir
+              </Button>
+            </VStack>
+          </CardBody>
+        </Card>
+
       </HStack>
     </Box>
   );

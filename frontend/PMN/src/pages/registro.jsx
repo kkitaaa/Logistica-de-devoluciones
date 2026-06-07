@@ -199,6 +199,31 @@ function Register() {
             {mensaje}
           </div>
         )}
+
+        <div
+          style={{
+            marginTop: 20,
+            textAlign: "center",
+            color: "#bbb",
+          }}
+        >
+          ¿Ya tienes cuenta?{' '}
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#56b3ff",
+              cursor: "pointer",
+              textDecoration: "underline",
+              fontSize: "inherit",
+              padding: 0,
+            }}
+          >
+            Inicia sesión
+          </button>
+        </div>
       </div>
     </div>
   );

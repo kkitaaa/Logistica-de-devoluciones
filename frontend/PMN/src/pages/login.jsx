@@ -190,6 +190,31 @@ function Login() {
             {mensaje}
           </div>
         )}
+
+        <div
+          style={{
+            marginTop: 20,
+            textAlign: "center",
+            color: "#bbb",
+          }}
+        >
+          ¿No tienes cuenta?{' '}
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#56b3ff",
+              cursor: "pointer",
+              textDecoration: "underline",
+              fontSize: "inherit",
+              padding: 0,
+            }}
+          >
+            Regístrate
+          </button>
+        </div>
       </div>
     </div>
   );

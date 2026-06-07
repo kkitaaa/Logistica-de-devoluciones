@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function colorEstado(estado) {
   switch (estado) {
@@ -33,6 +34,7 @@ function colorEstado(estado) {
 export default function MisSolicitudes() {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     cargarSolicitudes();
@@ -41,8 +43,13 @@ export default function MisSolicitudes() {
   const cargarSolicitudes = async () => {
     try {
       const usuario = JSON.parse(
-        localStorage.getItem("usuario")
+        localStorage.getItem("usuario") || "{}"
       );
+
+      if (!usuario?.id) {
+        navigate("/login");
+        return;
+      }
 
       const res = await fetch(
         `http://localhost:3000/api/mis-solicitudes/${usuario.id}`
