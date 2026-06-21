@@ -184,19 +184,22 @@ export default function SolicitudDetalle() {
       {/* Header */}
       <HStack justify="space-between" mb={6}>
         <VStack align="start" spacing={0}>
-          <Heading>Solicitud #{solicitud.id_solicitud}</Heading>
-          <Text fontSize="sm" color="#999">
-            {usuario?.nombre} • {usuario?.rol}
+          <Heading color="#e0e0e0" size="lg">
+            Solicitud #{solicitud.id_solicitud}
+          </Heading>
+          <Text fontSize="sm" color="gray.400">
+            Rol: {usuario?.rol} • Usuario: {usuario?.nombre}
           </Text>
         </VStack>
-        <Button
-          onClick={handleLogout}
-          colorScheme="red"
-          variant="outline"
-          size="sm"
-        >
-          Cerrar Sesión
-        </Button>
+
+        <HStack>
+          <Button onClick={() => navigate(-1)} colorScheme="gray" variant="outline" size="sm">
+            Volver
+          </Button>
+          <Button onClick={handleLogout} colorScheme="red" variant="outline" size="sm">
+            Cerrar Sesión
+          </Button>
+        </HStack>
       </HStack>
 
       <Box maxW="1000px" mx="auto">
@@ -241,167 +244,6 @@ export default function SolicitudDetalle() {
             </Stack>
           </SimpleGrid>
         </Box>
-
-        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6} mt={6}>
-          {/* Recepción Logística - Solo para operador_logistica y admin */}
-          {(usuario?.rol === 'operador_logistica' || usuario?.rol === 'admin') && (
-            <Box
-              bg="#1a1a1a"
-              p={6}
-              borderRadius="12px"
-              border="1px solid #2a2a2a"
-            >
-              <Heading size="md" mb={4}>
-                Recepción Logística
-              </Heading>
-
-              {revision && (
-                <Stack spacing={2} mb={5} color="gray.300">
-                  <Text>
-                    <b>Estado real:</b> {revision.estado_producto}
-                  </Text>
-                  <Text>
-                    <b>Inconsistencia:</b>{" "}
-                    {revision.inconsistencia ? "Sí" : "No"}
-                  </Text>
-                  <Text>
-                    <b>Informe:</b> {revision.observacion || "Sin observación"}
-                  </Text>
-                </Stack>
-              )}
-
-              <form onSubmit={guardarRevision}>
-                <Stack spacing={4}>
-                  <FormControl isDisabled={solicitudRechazada || !!revision}>
-                    <FormLabel>Estado del producto</FormLabel>
-                    <Select
-                      bg="#111"
-                      borderColor="#444"
-                      value={revisionForm.estado_producto}
-                      onChange={(e) =>
-                        setRevisionForm({
-                          ...revisionForm,
-                          estado_producto: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="nuevo">Nuevo</option>
-                      <option value="usado">Usado</option>
-                      <option value="defectuoso">Defectuoso</option>
-                      <option value="danado">Dañado</option>
-                      <option value="incompleto">Incompleto</option>
-                    </Select>
-                  </FormControl>
-
-                  <FormControl isDisabled={solicitudRechazada || !!revision}>
-                    <FormLabel>Informe Técnico</FormLabel>
-                    <Textarea
-                      bg="#111"
-                      borderColor="#444"
-                      resize="none"
-                      value={revisionForm.observacion}
-                      onChange={(e) =>
-                        setRevisionForm({
-                          ...revisionForm,
-                          observacion: e.target.value,
-                        })
-                      }
-                    />
-                  </FormControl>
-
-                  <Button
-                    type="submit"
-                    colorScheme="blue"
-                    isLoading={guardandoRevision}
-                    isDisabled={solicitudRechazada || !!revision}
-                  >
-                    Registrar Recepción
-                  </Button>
-                </Stack>
-              </form>
-            </Box>
-          )}
-
-          {/* Evaluación Técnica - Solo para evaluador_tecnico y admin */}
-          {(usuario?.rol === 'evaluador_tecnico' || usuario?.rol === 'admin') && (
-            <Box
-              bg="#1a1a1a"
-              p={6}
-              borderRadius="12px"
-              border="1px solid #2a2a2a"
-            >
-              <Heading size="md" mb={4}>
-                Evaluación Técnica
-              </Heading>
-
-              {evaluacion && (
-                <Stack spacing={2} mb={5} color="gray.300">
-                  <Text>
-                    <b>Resolución:</b> {evaluacion.resolucion}
-                  </Text>
-                  <Text>
-                    <b>Fecha:</b>{" "}
-                    {evaluacion.fecha
-                      ? new Date(evaluacion.fecha).toLocaleDateString()
-                      : "Sin fecha"}
-                  </Text>
-                  <Text>
-                    <b>Informe:</b> {evaluacion.observacion || "Sin observación"}
-                  </Text>
-                </Stack>
-              )}
-
-              <form onSubmit={guardarEvaluacion}>
-                <Stack spacing={4}>
-                  <FormControl isDisabled={solicitudRechazada || !!evaluacion}>
-                    <FormLabel>Resolución Final</FormLabel>
-                    <Select
-                      bg="#111"
-                      borderColor="#444"
-                      value={evaluacionForm.resolucion}
-                      onChange={(e) =>
-                        setEvaluacionForm({
-                          ...evaluacionForm,
-                          resolucion: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="reparacion">Reparación</option>
-                      <option value="reemplazo">Reemplazo</option>
-                      <option value="reembolso">Reembolso</option>
-                      <option value="rechazo">Rechazo</option>
-                    </Select>
-                  </FormControl>
-
-                  <FormControl isDisabled={solicitudRechazada || !!evaluacion}>
-                    <FormLabel>Análisis Técnico</FormLabel>
-                    <Textarea
-                      bg="#111"
-                      borderColor="#444"
-                      resize="none"
-                      value={evaluacionForm.observacion}
-                      onChange={(e) =>
-                        setEvaluacionForm({
-                          ...evaluacionForm,
-                          observacion: e.target.value,
-                        })
-                      }
-                    />
-                  </FormControl>
-
-                  <Button
-                    type="submit"
-                    colorScheme="green"
-                    isLoading={guardandoEvaluacion}
-                    isDisabled={solicitudRechazada || !!evaluacion}
-                  >
-                    Guardar Resolución
-                  </Button>
-                </Stack>
-              </form>
-            </Box>
-          )}
-        </SimpleGrid>
       </Box>
     </Box>
   );

@@ -47,9 +47,6 @@ Plataforma completa de gestión de devoluciones de productos con control de gara
 ```bash
 cd backend
 
-# Copiar archivo de configuración
-cp .env.example .env
-
 # Instalar dependencias
 npm install
 
@@ -84,7 +81,6 @@ Para registrarse, selecciona uno de los siguientes roles:
 | Cliente | Crear solicitudes, ver propias | Nueva devolución, mis solicitudes |
 | Operador Logística | Registrar recepción | Ver todas las solicitudes, registrar estado |
 | Evaluador Técnico | Evaluar técnicamente | Ver solicitudes, determinar resolución |
-| Admin | Acceso total | Todo |
 
 ## 📝 Endpoints Principales
 
@@ -144,27 +140,6 @@ frontend/PMN/
 │   └── main.jsx       # Punto de entrada
 ```
 
-## 🎨 Características UI
-
-- Tema oscuro moderno
-- Tablas responsivas
-- Formularios validados
-- Badges de estado con colores
-- Mensajes de feedback (toast)
-- Barra de usuario con logout
-- Navegación intuitiva
-
-## 📊 Estados de Solicitud
-
-| Estado | Significado |
-|--------|-------------|
-| Aprobada | Pasa validación de garantía |
-| Rechazada | Falla validación de garantía |
-| Recepcionada | Operador registró estado |
-| En revisión | Detectada inconsistencia |
-| Reparación aprobada | Resolución: reparar |
-| Reemplazo aprobado | Resolución: reemplazar |
-| Reembolso aprobado | Resolución: reembolso |
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -196,20 +171,6 @@ PORT=3000
 ```
 VITE_API_URL=http://localhost:3000
 ```
-
-## ⚡ Próximas Mejoras
-
-- [ ] Notificaciones por correo
-- [ ] Auditoría de cambios
-- [ ] Exportar reportes a PDF
-- [ ] Búsqueda y filtrado avanzado
-- [ ] Historial de cambios por solicitud
-- [ ] Dashboard de estadísticas
-- [ ] Integración con sistema de pagos
-
-## 📧 Soporte
-
-Para reportar problemas o sugerencias, crear un issue en el repositorio.
 
 ---
 

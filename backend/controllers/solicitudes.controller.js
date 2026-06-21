@@ -146,7 +146,7 @@ async function evaluarSolicitud(req, res) {
   }
 }
 
-const { listarSolicitudesEnRevision } = require("../services/solicitud.service"); // Importarlo arriba
+const { listarSolicitudesEnRevision } = require("../services/solicitud.service"); 
 
 async function obtenerSolicitudesEnRevisionController(req, res) {
   try {

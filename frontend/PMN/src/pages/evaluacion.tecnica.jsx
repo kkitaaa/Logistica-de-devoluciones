@@ -251,7 +251,6 @@ export default function EvaluadorTecnico() {
                           sx={{ "> option": { background: "#1a1a1a", color: "white" } }}
                           onChange={(e) => handleChange(s.id_solicitud, "resolucion", e.target.value)}
                         >
-                          <option value="reparacion">Reparación de la pieza</option>
                           <option value="reemplazo">Reemplazo por unidad nueva</option>
                           <option value="reembolso">Reembolso del dinero</option>
                           <option value="rechazo">Rechazo (Garantía invalidada por mal uso)</option>
