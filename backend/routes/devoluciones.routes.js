@@ -1,9 +1,17 @@
 const express = require('express');
+const { verificarToken, verificarRol, verificarAccesoCliente } = require('../middleware/auth');
 const { procesarDevolucion } = require('../controllers/devoluciones.controller');
 const { insertarProducto, obtenerProductos } = require('../controllers/productos.controller');
 const { insertarPedido, obtenerPedidos, obtenerMisPedidos } = require('../controllers/pedidos.controller');
 const { insertarCliente, obtenerClientes } = require('../controllers/clientes.controller');
-const {insertarSolicitud, obtenerSolicitudes,  obtenerSolicitudPorIdController,  obtenerMisSolicitudes} = require('../controllers/solicitudes.controller');
+const {
+  insertarSolicitud,
+  obtenerSolicitudes,
+  obtenerSolicitudPorIdController,
+  obtenerMisSolicitudes,
+  recepcionarSolicitud,
+  evaluarSolicitud,
+} = require('../controllers/solicitudes.controller');
 const { obtenerGarantias } = require('../controllers/garantias.controller');
 const {register, login} = require('../controllers/auth.controller');
 
@@ -17,6 +25,23 @@ const router = express.Router();
  *       - Clientes
  *     summary: Crear un cliente
  *     description: Inserta un cliente en la base de datos.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nombre_completo
+ *               - numero_telefonico
+ *             properties:
+ *               nombre_completo:
+ *                 type: string
+ *               numero_telefonico:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Cliente creado exitosamente
  */
 router.post('/cliente', insertarCliente);
 
@@ -39,6 +64,22 @@ router.get('/clientes', obtenerClientes);
  *       - Productos
  *     summary: Insertar un producto con garantía
  *     description: Crea un producto y su registro de garantía.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               descripcion:
+ *                 type: string
+ *               precio:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Producto creado exitosamente
  */
 router.post('/producto', insertarProducto);
 
@@ -61,6 +102,26 @@ router.get('/productos', obtenerProductos);
  *       - Pedidos
  *     summary: Crear pedido
  *     description: Inserta un pedido y asocia productos.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id_cliente:
+ *                 type: integer
+ *               productos:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *               cantidad:
+ *                 type: integer
+ *               fecha:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Pedido creado exitosamente
  */
 router.post('/pedido', insertarPedido);
 
@@ -76,23 +137,23 @@ router.get('/pedidos', obtenerPedidos);
 
 /**
  * @swagger
- * /api/mis-pedidos/{idUsuario}:
+ * /api/mis-pedidos/{id_cliente}:
  *   get:
  *     tags:
  *       - Pedidos
- *     summary: Obtener pedidos de un usuario
+ *     summary: Obtener pedidos de un cliente
  *     parameters:
  *       - in: path
- *         name: idUsuario
+ *         name: id_cliente
  *         required: true
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Lista de pedidos del usuario
+ *         description: Lista de pedidos del cliente
  */
 router.get(
-  '/mis-pedidos/:idUsuario',
+  '/mis-pedidos/:id_cliente',
   obtenerMisPedidos
 );
 
@@ -103,8 +164,31 @@ router.get(
  *     tags:
  *       - Solicitudes
  *     summary: Crear solicitud de devolución
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_pedido
+ *               - motivo
+ *             properties:
+ *               id_pedido:
+ *                 type: integer
+ *               motivo:
+ *                 type: string
+ *               id_cliente:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Solicitud creada exitosamente
+ *       401:
+ *         description: No autorizado
  */
-router.post('/solicitud', insertarSolicitud);
+router.post('/solicitud', verificarToken, verificarRol('cliente'), insertarSolicitud);
 
 /**
  * @swagger
@@ -113,8 +197,26 @@ router.post('/solicitud', insertarSolicitud);
  *     tags:
  *       - Solicitudes
  *     summary: Procesar devolución
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               idSolicitud:
+ *                 type: integer
+ *               estado:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Devolución procesada exitosamente
+ *       401:
+ *         description: No autorizado
  */
-router.post('/devolucion', insertarSolicitud);
+router.post('/devolucion', verificarToken, verificarRol('cliente'), insertarSolicitud);
 
 /**
  * @swagger
@@ -124,45 +226,38 @@ router.post('/devolucion', insertarSolicitud);
  *       - Solicitudes
  *     summary: Obtener todas las solicitudes
  */
-router.get('/solicitudes', obtenerSolicitudes);
+router.get('/solicitudes', verificarToken, obtenerSolicitudes);
+
+router.get('/solicitudes/:id', verificarToken, obtenerSolicitudPorIdController);
+
+router.post('/solicitudes/:id/revision-logistica', verificarToken, verificarRol('operador_logistica', 'admin'), recepcionarSolicitud);
+
+router.post('/solicitudes/:id/evaluacion-tecnica', verificarToken, verificarRol('evaluador_tecnico', 'admin'), evaluarSolicitud);
 
 /**
  * @swagger
- * /api/solicitudes/{id}:
+ * /api/mis-solicitudes/{id_cliente}:
  *   get:
  *     tags:
  *       - Solicitudes
- *     summary: Obtener solicitud por ID
+ *     summary: Obtener solicitudes del cliente
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: id_cliente
  *         required: true
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Solicitud encontrada
+ *         description: Lista de solicitudes del cliente
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: No tienes permisos para ver estos datos
  */
-router.get('/solicitudes/:id', obtenerSolicitudPorIdController);
-
-/**
- * @swagger
- * /api/mis-solicitudes/{idUsuario}:
- *   get:
- *     tags:
- *       - Solicitudes
- *     summary: Obtener solicitudes del usuario
- *     parameters:
- *       - in: path
- *         name: idUsuario
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Lista de solicitudes del usuario
- */
-router.get('/mis-solicitudes/:idUsuario', obtenerMisSolicitudes);
+router.get('/mis-solicitudes/:id_cliente', verificarToken, verificarAccesoCliente, obtenerMisSolicitudes);
 
 /**
  * @swagger

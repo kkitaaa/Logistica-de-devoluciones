@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const [correo, setCorreo] = useState("");
@@ -8,6 +10,7 @@ function Login() {
   const [cargando, setCargando] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   useEffect(() => {
     const credenciales = localStorage.getItem(
@@ -34,7 +37,7 @@ function Login() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/auth/login",
+        apiUrl("/api/auth/login"),
         {
           method: "POST",
           headers: {
@@ -49,16 +52,9 @@ function Login() {
 
       const data = await res.json();
 
-      if (data.token) {
-        localStorage.setItem(
-          "token",
-          data.token
-        );
-
-        localStorage.setItem(
-          "usuario",
-          JSON.stringify(data.usuario)
-        );
+      if (data.token && data.usuario) {
+        // Usar el contexto de autenticación
+        login(data.usuario, data.token);
 
         setMensaje(
           `Bienvenido ${data.usuario.nombre}`

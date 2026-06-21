@@ -2,12 +2,13 @@ const {
   crearSolicitud,
   listarSolicitudes,
   obtenerSolicitudPorId,
-  obtenerSolicitudesPorUsuario,
+  obtenerSolicitudesPorCliente,
+  registrarRevisionLogistica,
+  registrarEvaluacionTecnica,
 } = require("../services/solicitud.service");
 
-// POST /solicitud
 async function insertarSolicitud(req, res) {
-  const { id_pedido, motivo } = req.body;
+  const { id_pedido, motivo, id_cliente } = req.body;
 
   if (!id_pedido || !motivo) {
     return res.status(400).json({
@@ -16,25 +17,25 @@ async function insertarSolicitud(req, res) {
   }
 
   try {
-    const estado = await crearSolicitud(id_pedido, motivo);
+    const resultado = await crearSolicitud(id_pedido, motivo, id_cliente);
 
     return res.json({
       mensaje:
-        estado === "Aprobada"
-          ? "Solicitud aprobada: garantía válida."
-          : "Solicitud rechazada: garantía expirada o no disponible.",
-      estado,
+        resultado.estado === "Aprobada"
+          ? "Solicitud aprobada: garantia valida."
+          : "Solicitud rechazada: garantia expirada o no disponible.",
+      estado: resultado.estado,
+      solicitud: resultado.solicitud,
     });
   } catch (error) {
     console.error("Error al insertar solicitud:", error);
 
-    return res.status(500).json({
+    return res.status(400).json({
       error: error.message || "Error al insertar la solicitud",
     });
   }
 }
 
-// GET /solicitudes
 async function obtenerSolicitudes(req, res) {
   try {
     const solicitudes = await listarSolicitudes();
@@ -49,7 +50,6 @@ async function obtenerSolicitudes(req, res) {
   }
 }
 
-// GET /solicitudes/:id
 async function obtenerSolicitudPorIdController(req, res) {
   const { id } = req.params;
 
@@ -72,19 +72,80 @@ async function obtenerSolicitudPorIdController(req, res) {
   }
 }
 
-// GET /mis-solicitudes/:idUsuario
 async function obtenerMisSolicitudes(req, res) {
-  const { idUsuario } = req.params;
+  const { id_cliente } = req.params;
 
   try {
-    const solicitudes = await obtenerSolicitudesPorUsuario(idUsuario);
+    const solicitudes = await obtenerSolicitudesPorCliente(id_cliente);
 
     return res.json(solicitudes);
   } catch (error) {
-    console.error("Error al obtener solicitudes del usuario:", error);
+    console.error("Error al obtener solicitudes del cliente:", error);
 
     return res.status(500).json({
-      error: "Error al obtener solicitudes del usuario",
+      error: "Error al obtener solicitudes del cliente",
+    });
+  }
+}
+
+async function recepcionarSolicitud(req, res) {
+  const { id } = req.params;
+  const { estado_producto, observacion } = req.body;
+
+  if (!estado_producto) {
+    return res.status(400).json({
+      error: "estado_producto es obligatorio",
+    });
+  }
+
+  try {
+    const resultado = await registrarRevisionLogistica(
+      id,
+      estado_producto,
+      observacion
+    );
+
+    return res.json({
+      mensaje: resultado.revision.inconsistencia
+        ? "Recepcion registrada con inconsistencia. Se deriva a revision tecnica."
+        : "Recepcion registrada sin inconsistencias.",
+      ...resultado,
+    });
+  } catch (error) {
+    console.error("Error al registrar recepcion logistica:", error);
+
+    return res.status(400).json({
+      error: error.message || "Error al registrar recepcion logistica",
+    });
+  }
+}
+
+async function evaluarSolicitud(req, res) {
+  const { id } = req.params;
+  const { resolucion, observacion } = req.body;
+
+  if (!resolucion) {
+    return res.status(400).json({
+      error: "resolucion es obligatoria",
+    });
+  }
+
+  try {
+    const resultado = await registrarEvaluacionTecnica(
+      id,
+      resolucion,
+      observacion
+    );
+
+    return res.json({
+      mensaje: "Evaluacion tecnica registrada.",
+      ...resultado,
+    });
+  } catch (error) {
+    console.error("Error al registrar evaluacion tecnica:", error);
+
+    return res.status(400).json({
+      error: error.message || "Error al registrar evaluacion tecnica",
     });
   }
 }
@@ -94,4 +155,6 @@ module.exports = {
   obtenerSolicitudes,
   obtenerSolicitudPorIdController,
   obtenerMisSolicitudes,
+  recepcionarSolicitud,
+  evaluarSolicitud,
 };

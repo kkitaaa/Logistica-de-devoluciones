@@ -1,8 +1,10 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const { JWT_SECRET } = require('../middleware/auth');
 const {
   buscarUsuarioPorCorreo,
+  buscarClientePorUsuario,
   crearUsuario
 } = require('../services/auth.service');
 
@@ -75,25 +77,33 @@ async function login(req, res) {
         error: 'Contraseña incorrecta'
       });
     }
+    
+    const cliente =
+      usuario.rol === 'cliente'
+        ? await buscarClientePorUsuario(usuario.id)
+        : null;
 
     const token = jwt.sign(
       {
         id: usuario.id,
-        rol: usuario.rol
+        rol: usuario.rol,
+        id_cliente: cliente?.id_cliente ?? null
       },
-      'pmv-secret-key',
+      JWT_SECRET,
       {
-        expiresIn: '1d'
+        expiresIn: '7d'
       }
     );
+
 
     return res.json({
       token,
       usuario: {
         id: usuario.id,
+        id_cliente: cliente?.id_cliente ?? null,
         nombre: usuario.nombre,
         correo: usuario.correo,
-        numero_telefonico: usuario.numero_telefonico,
+        numero_telefonico: cliente?.numero_telefonico ?? usuario.numero_telefonico,
         rol: usuario.rol
       }
     });

@@ -83,6 +83,7 @@ CREATE TABLE Evaluacion_Tecnica (
     id_evaluacion INT AUTO_INCREMENT PRIMARY KEY,
 
     resolucion ENUM(
+        'reparacion',
         'reembolso',
         'reemplazo',
         'rechazo'

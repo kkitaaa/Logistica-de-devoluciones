@@ -1,37 +1,60 @@
-const connection = require('../db');
+const db = require("../db");
 
 async function crearProducto(nombre, precio, disponibilidad, fecha_limite) {
   if (!nombre || precio == null || disponibilidad == null || !fecha_limite) {
-    throw new Error('Los campos nombre, precio, disponibilidad y fecha_limite son obligatorios');
+    throw new Error(
+      "Los campos nombre, precio, disponibilidad y fecha_limite son obligatorios"
+    );
   }
 
-  const [result] = await connection.promise().query(
-    'INSERT INTO Producto (nombre, precio) VALUES (?, ?)',
-    [nombre, precio]
-  );
+  const producto = await db.insert("producto", {
+    nombre,
+    precio,
+  });
 
-  const id_producto = result.insertId;
-  await connection.promise().query(
-    'INSERT INTO Garantia (disponibilidad, fecha_limite, id_producto) VALUES (?, ?, ?)',
-    [disponibilidad ? 1 : 0, fecha_limite, id_producto]
-  );
+  await db.insert("garantia", {
+    disponibilidad: Boolean(disponibilidad),
+    fecha_limite,
+    id_producto: producto.id_producto,
+  });
 
   return {
-    id_producto,
+    id_producto: producto.id_producto,
     nombre,
     precio,
     disponibilidad: Boolean(disponibilidad),
-    fecha_limite
+    fecha_limite,
   };
 }
 
 async function listarProductos() {
-  const [rows] = await connection.promise().query(
-    `SELECT p.id_producto, p.nombre, p.precio, g.disponibilidad, g.fecha_limite
-     FROM Producto p
-     JOIN Garantia g ON g.id_producto = p.id_producto`
+  const productos = await db.select("producto", {
+    select: "id_producto,nombre,precio",
+    order: "id_producto.asc",
+  });
+
+  const ids = productos.map((producto) => producto.id_producto);
+
+  if (ids.length === 0) {
+    return [];
+  }
+
+  const garantias = await db.select("garantia", {
+    select: "id_producto,disponibilidad,fecha_limite",
+    id_producto: db.inFilter(ids),
+  });
+
+  const garantiaPorProducto = new Map(
+    garantias.map((garantia) => [garantia.id_producto, garantia])
   );
-  return rows;
+
+  return productos.map((producto) => ({
+    ...producto,
+    disponibilidad:
+      garantiaPorProducto.get(producto.id_producto)?.disponibilidad ?? null,
+    fecha_limite:
+      garantiaPorProducto.get(producto.id_producto)?.fecha_limite ?? null,
+  }));
 }
 
 module.exports = { crearProducto, listarProductos };

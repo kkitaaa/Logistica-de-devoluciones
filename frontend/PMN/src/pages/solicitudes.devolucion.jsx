@@ -13,21 +13,30 @@ import {
   Box,
   Text,
   HStack,
+  VStack,
 } from "@chakra-ui/react";
 
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { obtenerSolicitudes } from "../services/solicitudes";
+import { useAuth } from "../context/AuthContext";
+import { apiUrl } from "../services/api";
 
 function colorEstado(estado) {
   switch (estado) {
     case "Aprobada":
+    case "Recepcionada":
+    case "Reemplazo aprobado":
+    case "Reembolso aprobado":
+    case "Reparacion aprobada":
       return "green";
     case "Rechazada":
       return "red";
     case "Pendiente":
       return "yellow";
+    case "En revision":
+      return "purple";
     case "En revisión":
       return "purple";
     default:
@@ -39,6 +48,12 @@ export default function Solicitudes() {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { usuario, obtenerHeaders, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   useEffect(() => {
     cargarSolicitudes();
@@ -46,7 +61,10 @@ export default function Solicitudes() {
 
   const cargarSolicitudes = async () => {
     try {
-      const data = await obtenerSolicitudes();
+      const res = await fetch(apiUrl("/api/solicitudes"), {
+        headers: obtenerHeaders(),
+      });
+      const data = await res.json();
       setSolicitudes(data);
     } catch (error) {
       console.error(error);
@@ -76,13 +94,23 @@ export default function Solicitudes() {
     <Box p={6} minH="100vh" bg="#0f0f0f" color="white">
 
       <HStack justify="space-between" mb={6}>
-        <Heading color="#e0e0e0"size="lg">
-          Solicitudes de devolución
-        </Heading>
+        <VStack align="start" spacing={0}>
+          <Heading color="#e0e0e0" size="lg">
+            Solicitudes de devolución
+          </Heading>
+          <Text fontSize="sm" color="gray.400">
+            Rol: {usuario?.rol} • Total: {solicitudes.length}
+          </Text>
+        </VStack>
 
-        <Text fontSize="sm" color="gray.400">
-          Total: {solicitudes.length}
-        </Text>
+        <Button
+          onClick={handleLogout}
+          colorScheme="red"
+          variant="outline"
+          size="sm"
+        >
+          Cerrar Sesión
+        </Button>
       </HStack>
 
       <TableContainer

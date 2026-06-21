@@ -11,19 +11,30 @@ import {
   Th,
   Thead,
   Tr,
+  Button,
+  HStack,
+  VStack,
 } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 function colorEstado(estado) {
   switch (estado) {
     case "Aprobada":
+    case "Recepcionada":
+    case "Reemplazo aprobado":
+    case "Reembolso aprobado":
+    case "Reparacion aprobada":
       return "green";
     case "Rechazada":
       return "red";
     case "Pendiente":
       return "yellow";
+    case "En revision":
+      return "purple";
     case "En revisión":
       return "purple";
     default:
@@ -35,6 +46,12 @@ export default function MisSolicitudes() {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { usuario, obtenerHeaders, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   useEffect(() => {
     cargarSolicitudes();
@@ -42,17 +59,16 @@ export default function MisSolicitudes() {
 
   const cargarSolicitudes = async () => {
     try {
-      const usuario = JSON.parse(
-        localStorage.getItem("usuario") || "{}"
-      );
-
-      if (!usuario?.id) {
+      if (!usuario?.id_cliente) {
         navigate("/login");
         return;
       }
 
       const res = await fetch(
-        `http://localhost:3000/api/mis-solicitudes/${usuario.id}`
+        apiUrl(`/api/mis-solicitudes/${usuario.id_cliente}`),
+        {
+          headers: obtenerHeaders(),
+        }
       );
 
       const data = await res.json();
@@ -91,9 +107,34 @@ export default function MisSolicitudes() {
       color="white"
       p={6}
     >
-      <Heading color="#e0e0e0" mb={6}>
-        Mis Solicitudes
-      </Heading>
+      {/* Barra superior con navegación */}
+      <HStack justify="space-between" mb={6}>
+        <VStack align="start" spacing={0}>
+          <Heading color="#e0e0e0" size="lg">
+            Mis Solicitudes
+          </Heading>
+          <Text fontSize="sm" color="#999">
+            {usuario?.nombre}
+          </Text>
+        </VStack>
+        <HStack>
+          <Button
+            onClick={() => navigate("/devolucion")}
+            colorScheme="blue"
+            size="sm"
+          >
+            Nueva Solicitud
+          </Button>
+          <Button
+            onClick={handleLogout}
+            colorScheme="red"
+            variant="outline"
+            size="sm"
+          >
+            Cerrar Sesión
+          </Button>
+        </HStack>
+      </HStack>
 
       {solicitudes.length === 0 ? (
         <Box

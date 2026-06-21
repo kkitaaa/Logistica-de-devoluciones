@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 function Register() {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [numero_telefonico, setNumeroTelefonico] = useState("");
+  const [rol, setRol] = useState("cliente");
 
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +24,7 @@ function Register() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/auth/register",
+        apiUrl("/api/auth/register"),
         {
           method: "POST",
           headers: {
@@ -31,6 +35,7 @@ function Register() {
             correo,
             password,
             numero_telefonico,
+            rol,
           }),
         }
       );
@@ -46,7 +51,10 @@ function Register() {
           })
         );
 
-        navigate("/login");
+        setMensaje("Registro exitoso. Redirigiendo al login...");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       } else {
         setMensaje(data.error || "Error al registrar");
       }

@@ -1,35 +1,55 @@
-const connection = require('../db');
+const db = require("../db");
 
 async function validarGarantiaPedido(id_pedido) {
-  const query = `
-    SELECT p.id_producto, g.disponibilidad, g.fecha_limite
-    FROM Producto_Pedido pp
-    JOIN Producto p ON pp.id_producto = p.id_producto
-    JOIN Garantia g ON g.id_producto = p.id_producto
-    WHERE pp.id_pedido = ?;
-  `;
-
-  const [rows] = await connection.promise().query(query, [id_pedido]);
-  const hoy = new Date();
-  let valido = true;
-
-  rows.forEach(row => {
-    const fechaLimite = new Date(row.fecha_limite);
-    if (!row.disponibilidad || fechaLimite < hoy) {
-      valido = false;
-    }
+  const productosPedido = await db.select("producto_pedido", {
+    select: "id_producto",
+    id_pedido: `eq.${id_pedido}`,
   });
 
-  return valido;
+  if (productosPedido.length === 0) {
+    return false;
+  }
+
+  const garantias = await db.select("garantia", {
+    select: "disponibilidad,fecha_limite,id_producto",
+    id_producto: db.inFilter(
+      productosPedido.map((productoPedido) => productoPedido.id_producto)
+    ),
+  });
+
+  const hoy = new Date();
+
+  return garantias.every((garantia) => {
+    const fechaLimite = new Date(garantia.fecha_limite);
+    return garantia.disponibilidad && fechaLimite >= hoy;
+  });
 }
 
 async function listarGarantias() {
-  const [rows] = await connection.promise().query(
-    `SELECT g.id_garantia, g.disponibilidad, g.fecha_limite, g.id_producto, p.nombre
-     FROM Garantia g
-     JOIN Producto p ON p.id_producto = g.id_producto`
+  const garantias = await db.select("garantia", {
+    select: "id_garantia,disponibilidad,fecha_limite,id_producto",
+    order: "id_garantia.asc",
+  });
+
+  const ids = garantias.map((garantia) => garantia.id_producto);
+
+  if (ids.length === 0) {
+    return [];
+  }
+
+  const productos = await db.select("producto", {
+    select: "id_producto,nombre",
+    id_producto: db.inFilter(ids),
+  });
+
+  const productoPorId = new Map(
+    productos.map((producto) => [producto.id_producto, producto])
   );
-  return rows;
+
+  return garantias.map((garantia) => ({
+    ...garantia,
+    nombre: productoPorId.get(garantia.id_producto)?.nombre ?? null,
+  }));
 }
 
 module.exports = { validarGarantiaPedido, listarGarantias };

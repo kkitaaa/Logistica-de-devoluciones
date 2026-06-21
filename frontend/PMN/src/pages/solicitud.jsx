@@ -1,10 +1,15 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 function Devolucion() {
   const [idPedido, setIdPedido] = useState("");
   const [motivo, setMotivo] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
+  const navigate = useNavigate();
+  const { usuario, obtenerHeaders } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,18 +17,31 @@ function Devolucion() {
     setMensaje("");
 
     try {
-      const res = await fetch("http://localhost:3000/api/devolucion", {
+      if (!usuario?.id_cliente) {
+        navigate("/login");
+        return;
+      }
+
+      const res = await fetch(apiUrl("/api/solicitud"), {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id_pedido: idPedido, motivo }),
+        headers: obtenerHeaders(),
+        body: JSON.stringify({
+          id_pedido: idPedido,
+          motivo,
+          id_cliente: usuario.id_cliente,
+        }),
       });
 
       const data = await res.json();
       setMensaje(data.mensaje || data.error || "Sin respuesta");
+      
+      if (res.ok) {
+        setTimeout(() => {
+          navigate("/mis-solicitudes");
+        }, 2000);
+      }
     } catch (err) {
-      setMensaje("Error de conexión con el servidor");
+      setMensaje("Error de conexion con el servidor");
     }
 
     setCargando(false);
@@ -51,8 +69,8 @@ function Devolucion() {
           border: "1px solid #333",
         }}
       >
-        <h2  style={{ textAlign: "center", marginBottom: 20, color: "#e0e0e0" }}>
-          Solicitar Devolución
+        <h2 style={{ textAlign: "center", marginBottom: 20, color: "#e0e0e0" }}>
+          Solicitar Devolucion
         </h2>
 
         <form onSubmit={handleSubmit}>
@@ -71,6 +89,7 @@ function Devolucion() {
               background: "#111",
               color: "white",
               outline: "none",
+              boxSizing: "border-box",
             }}
           />
 
@@ -90,6 +109,7 @@ function Devolucion() {
               color: "white",
               outline: "none",
               resize: "none",
+              boxSizing: "border-box",
             }}
           />
 
@@ -107,7 +127,7 @@ function Devolucion() {
               fontWeight: "bold",
             }}
           >
-            {cargando ? "Enviando..." : "Procesar Devolución"}
+            {cargando ? "Enviando..." : "Enviar solicitud"}
           </button>
         </form>
 
@@ -125,6 +145,25 @@ function Devolucion() {
           >
             {mensaje}
           </div>
+        )}
+
+        {mensaje && (
+          <button
+            type="button"
+            onClick={() => navigate("/mis-solicitudes")}
+            style={{
+              width: "100%",
+              marginTop: 12,
+              padding: 10,
+              borderRadius: 6,
+              border: "1px solid #333",
+              background: "#111",
+              color: "#ddd",
+              cursor: "pointer",
+            }}
+          >
+            Ver mis solicitudes
+          </button>
         )}
       </div>
     </div>
