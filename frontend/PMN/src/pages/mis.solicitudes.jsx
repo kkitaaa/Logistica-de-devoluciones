@@ -119,6 +119,15 @@ export default function MisSolicitudes() {
         </VStack>
         <HStack>
           <Button
+            onClick={() => navigate(-1)}
+            colorScheme="gray"
+            variant="outline"
+            size="sm"
+          >
+            Volver
+          </Button>
+
+          <Button
             onClick={() => navigate("/devolucion")}
             colorScheme="blue"
             size="sm"

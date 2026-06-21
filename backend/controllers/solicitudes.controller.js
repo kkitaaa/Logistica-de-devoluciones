@@ -90,33 +90,29 @@ async function obtenerMisSolicitudes(req, res) {
 
 async function recepcionarSolicitud(req, res) {
   const { id } = req.params;
-  const { estado_producto, observacion } = req.body;
+  const { estado_producto, observacion, inconsistencia } = req.body;
 
   if (!estado_producto) {
-    return res.status(400).json({
-      error: "estado_producto es obligatorio",
-    });
+    return res.status(400).json({ error: "estado_producto es obligatorio" });
   }
 
   try {
     const resultado = await registrarRevisionLogistica(
       id,
       estado_producto,
-      observacion
+      observacion,
+      inconsistencia 
     );
 
     return res.json({
-      mensaje: resultado.revision.inconsistencia
-        ? "Recepcion registrada con inconsistencia. Se deriva a revision tecnica."
-        : "Recepcion registrada sin inconsistencias.",
+      mensaje: resultado.estado === "En revision"
+        ? "Recepción registrada con inconsistencia. Se deriva a revisión técnica."
+        : "Recepción registrada sin inconsistencias.",
       ...resultado,
     });
   } catch (error) {
     console.error("Error al registrar recepcion logistica:", error);
-
-    return res.status(400).json({
-      error: error.message || "Error al registrar recepcion logistica",
-    });
+    return res.status(400).json({ error: error.message || "Error al registrar recepcion logistica" });
   }
 }
 
@@ -150,6 +146,18 @@ async function evaluarSolicitud(req, res) {
   }
 }
 
+const { listarSolicitudesEnRevision } = require("../services/solicitud.service"); // Importarlo arriba
+
+async function obtenerSolicitudesEnRevisionController(req, res) {
+  try {
+    const solicitudes = await listarSolicitudesEnRevision();
+    return res.json(solicitudes);
+  } catch (error) {
+    console.error("Error en endpoint en-revision:", error);
+    return res.status(500).json({ error: "Error al obtener solicitudes en revision" });
+  }
+}
+
 module.exports = {
   insertarSolicitud,
   obtenerSolicitudes,
@@ -157,4 +165,5 @@ module.exports = {
   obtenerMisSolicitudes,
   recepcionarSolicitud,
   evaluarSolicitud,
+  obtenerSolicitudesEnRevisionController,
 };

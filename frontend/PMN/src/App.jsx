@@ -9,6 +9,9 @@ import Login from "./pages/login";
 import Register from "./pages/registro";
 import MisSolicitudes from "./pages/mis.solicitudes";
 import OperadorSolicitudes from "./pages/operador.solicitudes";
+import CrearPedido from "./pages/crear.pedido";
+import MisPedidos from "./pages/mis.pedidos";
+import EvaluadorTecnico from "./pages/evaluacion.tecnica";
 
 function App() {
   return (
@@ -29,11 +32,31 @@ function App() {
         }
       />
 
+      {/* Crear pedido */}
+      <Route
+        path="/crear-pedido"
+        element={
+          <ProtectedRoute rolesPermitidos={['cliente']}>
+            <CrearPedido />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Mis pedidos */}
+      <Route
+        path="/mis-pedidos"
+        element={
+          <ProtectedRoute rolesPermitidos={['cliente']}>
+            <MisPedidos />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Crear devolución */}
       <Route
         path="/devolucion"
         element={
-          <ProtectedRoute rolesPermitidos={['cliente', ]}>
+          <ProtectedRoute rolesPermitidos={['cliente']}>
             <Devolucion />
           </ProtectedRoute>
         }
@@ -76,7 +99,16 @@ function App() {
             <OperadorSolicitudes />
           </ProtectedRoute>
         }
-/>
+      />
+
+      <Route
+        path="/evaluacion-tecnica"
+        element={
+          <ProtectedRoute rolesPermitidos={["evaluador_tecnico"]}>
+            <EvaluadorTecnico />
+          </ProtectedRoute>
+        }
+       />
 
       {/* fallback */}
       <Route path="*" element={<Navigate to="/" />} />

@@ -38,14 +38,11 @@ export default function Home() {
       {/* HEADER */}
       <HStack justify="space-between" mb={10}>
         <VStack align="start" spacing={0}>
-          <Text fontSize="sm" color="#999">
+          <Text fontSize="m" color="white">
             Bienvenido
           </Text>
-          <Text fontSize="lg" fontWeight="bold" color="#e0e0e0">
-            {usuario?.nombre}
-          </Text>
-          <Text fontSize="xs" color="#666">
-            Rol: {rol}
+          <Text fontSize="sm" color="gray.400">
+            Rol: {usuario?.rol} • Usuario: {usuario?.nombre || "Cliente"}
           </Text>
         </VStack>
 
@@ -68,6 +65,34 @@ export default function Home() {
         {/* ================= CLIENTE ================= */}
         {rol === "cliente" && (
           <>
+            <Card w="300px" bg={cardBg} border={border} transition="0.2s" _hover={{ transform: "scale(1.05)" }}>
+              <CardBody>
+                <VStack spacing={4}>
+                  <Heading size="md">Pedir</Heading>
+                  <Text fontSize="sm" color="gray.400">
+                    Crear un nuevo pedido
+                  </Text>
+                  <Button colorScheme="purple" w="100%" onClick={() => navigate("/crear-pedido")}>
+                    Ir
+                  </Button>
+                </VStack>
+              </CardBody>
+            </Card>
+
+            <Card w="300px" bg={cardBg} border={border} transition="0.2s" _hover={{ transform: "scale(1.05)" }}>
+              <CardBody>
+                <VStack spacing={4}>
+                  <Heading size="md">Mis pedidos</Heading>
+                  <Text fontSize="sm" color="gray.400">
+                    Ver el estado de mis pedidos
+                  </Text>
+                  <Button colorScheme="green" w="100%" onClick={() => navigate("/mis-pedidos")}>
+                    Ir
+                  </Button>
+                </VStack>
+              </CardBody>
+            </Card>
+
             <Card w="300px" bg={cardBg} border={border} transition="0.2s" _hover={{ transform: "scale(1.05)" }}>
               <CardBody>
                 <VStack spacing={4}>
@@ -95,11 +120,13 @@ export default function Home() {
                 </VStack>
               </CardBody>
             </Card>
+
           </>
         )}
 
         {/* ================= OPERADOR LOGÍSTICO ================= */}
         {rol === "operador_logistica" && (
+          <>
           <Card w="300px" bg={cardBg} border={border} transition="0.2s" _hover={{ transform: "scale(1.05)" }}>
             <CardBody>
               <VStack spacing={4}>
@@ -113,23 +140,54 @@ export default function Home() {
               </VStack>
             </CardBody>
           </Card>
+
+           <Card w="300px" bg={cardBg} border={border} transition="0.2s" _hover={{ transform: "scale(1.05)" }}>
+            <CardBody>
+              <VStack spacing={4}>
+                <Heading size="md">Todas las solicitudes</Heading>
+                <Text fontSize="sm" color="gray.400">
+                  Revisar todas las solicitudes realizadas
+                </Text>
+                <Button colorScheme="purple" w="100%" onClick={() => navigate("/solicitudes")}>
+                  Ir
+                </Button>
+              </VStack>
+            </CardBody>
+          </Card>         
+          </>
         )}
 
         {/* ================= TÉCNICO ================= */}
         {rol === "evaluador_tecnico" && (
+          <>
           <Card w="300px" bg={cardBg} border={border} transition="0.2s" _hover={{ transform: "scale(1.05)" }}>
             <CardBody>
               <VStack spacing={4}>
                 <Heading size="md">Evaluación técnica</Heading>
                 <Text fontSize="sm" color="gray.400">
-                  Analizar estado de productos
+                  Analizar estado de productos mandados a revisión
                 </Text>
-                <Button colorScheme="purple" w="100%" onClick={() => navigate("/evaluacion")}>
+                <Button colorScheme="purple" w="100%" onClick={() => navigate("/evaluacion-tecnica")}>
                   Ir
                 </Button>
               </VStack>
             </CardBody>
           </Card>
+
+          <Card w="300px" bg={cardBg} border={border} transition="0.2s" _hover={{ transform: "scale(1.05)" }}>
+            <CardBody>
+              <VStack spacing={4}>
+                <Heading size="md">Todas las solicitudes</Heading>
+                <Text fontSize="sm" color="gray.400">
+                  Revisar todas las solicitudes realizadas
+                </Text>
+                <Button colorScheme="teal" w="100%" onClick={() => navigate("/solicitudes")}>
+                  Ir
+                </Button>
+              </VStack>
+            </CardBody>
+          </Card>   
+          </>
         )}
 
       </HStack>

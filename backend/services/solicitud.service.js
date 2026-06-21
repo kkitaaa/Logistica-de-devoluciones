@@ -112,7 +112,8 @@ async function obtenerSolicitudPorId(id) {
 async function registrarRevisionLogistica(
   id_solicitud,
   estado_producto,
-  observacion = ""
+  observacion = "",
+  inconsistenciaManual = false
 ) {
   if (!ESTADOS_PRODUCTO.includes(estado_producto)) {
     throw new Error("Estado de producto no valido");
@@ -128,19 +129,14 @@ async function registrarRevisionLogistica(
     throw new Error("No se puede recepcionar una solicitud rechazada por garantia");
   }
 
-  const inconsistencia = detectarInconsistencia(
-    solicitud.motivo,
-    estado_producto
-  );
-
   const revision = await db.insert("revision_logistica", {
     estado_producto,
     observacion: observacion || null,
-    inconsistencia,
+    inconsistencia: inconsistenciaManual, // Usamos la del botón
     id_solicitud,
   });
 
-  const estado = inconsistencia ? "En revision" : "Recepcionada";
+  const estado = inconsistenciaManual ? "En revision" : "Recepcionada";
 
   await actualizarEstadoSolicitud(id_solicitud, estado);
 
@@ -324,6 +320,17 @@ function normalizar(texto) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+async function listarSolicitudesEnRevision() {
+  const solicitudes = await db.select("solicitud", {
+    select: "id_solicitud,fecha,estado,motivo,id_pedido",
+    estado: "eq.En revision", 
+    order: "id_solicitud.desc",
+  });
+
+  return completarSolicitudes(solicitudes);
+}
+
+
 module.exports = {
   crearSolicitud,
   listarSolicitudes,
@@ -331,4 +338,5 @@ module.exports = {
   obtenerSolicitudesPorCliente,
   registrarRevisionLogistica,
   registrarEvaluacionTecnica,
+  listarSolicitudesEnRevision,
 };

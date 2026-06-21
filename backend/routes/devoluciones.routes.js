@@ -11,11 +11,33 @@ const {
   obtenerMisSolicitudes,
   recepcionarSolicitud,
   evaluarSolicitud,
+  obtenerSolicitudesEnRevisionController
 } = require('../controllers/solicitudes.controller');
 const { obtenerGarantias } = require('../controllers/garantias.controller');
 const {register, login} = require('../controllers/auth.controller');
 
+
 const router = express.Router();
+
+/**
+ * @swagger
+ * /api/solicitudes/en-revision:
+ *   get:
+ *     tags:
+ *       - Solicitudes
+ *     summary: Obtener solicitudes en revisión técnica
+ *     description: Lista las solicitudes que fueron marcadas con inconsistencia por el operador logístico y que requieren una evaluación técnica profunda.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de solicitudes pendientes de evaluación técnica.
+ *       401:
+ *         description: No autorizado.
+ *       500:
+ *         description: Error del servidor.
+ */
+router.get('/solicitudes/en-revision', verificarToken,  obtenerSolicitudesEnRevisionController);
 
 /**
  * @swagger
